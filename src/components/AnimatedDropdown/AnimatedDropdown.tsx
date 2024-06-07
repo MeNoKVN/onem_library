@@ -1,5 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { Text, View, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+  Platform,
+} from 'react-native';
 import IIcon from 'react-native-vector-icons/Ionicons';
 import Animated, {
   useSharedValue,
@@ -12,6 +19,7 @@ interface DropdownOption {
   label: string;
   value: string;
 }
+
 interface AnimatedDropdownProps {
   options: DropdownOption[];
   onSelect: (selectedValue: string) => void;
@@ -50,7 +58,17 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
   const calculateDropdownPosition = () => {
     selectBoxRef.current?.measure((x, y, width, height, pageX, pageY) => {
       // Adjusted to measure based on the screen
-      setDropdownPosition({ top: pageY + height + 2, left: pageX });
+      //console.log(pageY, Platform.OS);
+
+      setDropdownPosition({
+        top:
+          pageY +
+          height +
+          2 -
+          (Platform.OS === 'android' ? Number(boxHeight) / 2 : 0),
+        left: pageX,
+      });
+      console.log();
     });
   };
 
