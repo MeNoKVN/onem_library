@@ -45,7 +45,10 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
   );
   const iconRotation = useSharedValue(0);
   const selectBoxRef = useRef<TouchableOpacity>(null);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: -69, left: 0 });
+  const [dropdownPosition, setDropdownPosition] = useState({
+    top: -69,
+    left: 0,
+  });
 
   const toggleDropdown = () => {
     if (!isOpen) {
@@ -120,7 +123,7 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
             style={styles.modalBackground}
             onPress={handleBackdropPress}
           />
-          {dropdownPosition.top !== -69 &&
+          {dropdownPosition.top !== -69 && (
             <View
               style={[
                 styles.dropdownContainer,
@@ -133,7 +136,7 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
             >
               {renderOptions()}
             </View>
-          }
+          )}
         </View>
       </Modal>
     );
