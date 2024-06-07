@@ -7,6 +7,10 @@ A library providing useful React Native components, including an animated dropdo
 ```sh
 npm install react-native-onem_library
 ```
+# Demo
+
+![AnimatedDropdown Demo] (https://github.com/MeNoKVN/onem_library/blob/cf7854fccce03c29b6223637048f6dc9546db1da/8t44eu.gif)
+
 
 ## Usage
 
