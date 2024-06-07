@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { Text, View, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import IIcon from 'react-native-vector-icons/Ionicons';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  FadeIn,
   FadeInLeft,
 } from 'react-native-reanimated';
 
@@ -21,6 +20,7 @@ interface AnimatedDropdownProps {
   boxWidth?: number;
   iconColor?: string;
   placeholder?: string;
+  style?: any;
 }
 
 const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
@@ -30,21 +30,38 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
   boxWidth = 200,
   iconColor = '#666',
   placeholder = 'Select an option',
+  style,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<DropdownOption | null>(
     null
   );
   const iconRotation = useSharedValue(0);
+  const selectBoxRef = useRef<TouchableOpacity>(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
   const toggleDropdown = () => {
+    if (!isOpen) {
+      calculateDropdownPosition();
+    }
     setIsOpen(!isOpen);
-    iconRotation.value = withTiming(isOpen ? 0 : 180, { duration: 200 });
+    iconRotation.value = withTiming(isOpen ? 0 : 180, { duration: 300 });
+  };
+
+  const calculateDropdownPosition = () => {
+    selectBoxRef.current?.measureInWindow((x, y, height) => {
+      setDropdownPosition({ top: y + height + 2, left: x });
+    });
   };
 
   const handleOptionSelect = (option: DropdownOption) => {
     setSelectedOption(option);
     onSelect(option.value);
+    setIsOpen(false);
+    iconRotation.value = withTiming(0, { duration: 300 });
+  };
+
+  const handleBackdropPress = () => {
     setIsOpen(false);
     iconRotation.value = withTiming(0, { duration: 300 });
   };
@@ -55,9 +72,56 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
     };
   });
 
+  const renderOptions = () => {
+    return options.map((option, index) => (
+      <Animated.View
+        entering={FadeInLeft.duration(300)
+          .springify()
+          .damping(18)
+          .stiffness(200)}
+        key={option.value}
+      >
+        <TouchableOpacity
+          style={[
+            styles.optionItem,
+            index !== options.length - 1 && styles.optionItemSeparator,
+          ]}
+          onPress={() => handleOptionSelect(option)}
+        >
+          <Text style={styles.optionText}>{option.label}</Text>
+        </TouchableOpacity>
+      </Animated.View>
+    ));
+  };
+
+  const renderDropdownModal = () => {
+    return (
+      <Modal visible={isOpen} transparent animationType="none">
+        <TouchableOpacity
+          style={styles.modalBackground}
+          onPress={handleBackdropPress}
+        >
+          <View
+            style={[
+              styles.dropdownContainer,
+              {
+                top: dropdownPosition.top,
+                left: dropdownPosition.left,
+                width: boxWidth,
+              },
+            ]}
+          >
+            {renderOptions()}
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    );
+  };
+
   return (
-    <View>
+    <View style={[styles.container, style]}>
       <TouchableOpacity
+        ref={selectBoxRef}
         activeOpacity={0.8}
         onPress={toggleDropdown}
         style={[styles.selectBox, { height: boxHeight, width: boxWidth }]}
@@ -69,38 +133,15 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
           <IIcon name="chevron-down" size={20} color={iconColor} />
         </Animated.View>
       </TouchableOpacity>
-      {isOpen && (
-        <Animated.View
-          style={[styles.dropdownContainer, { width: boxWidth }]}
-          entering={FadeIn}
-        >
-          {options.map((option, index) => (
-            <Animated.View
-              entering={FadeInLeft.duration(300)
-                .springify()
-                .damping(18)
-                .stiffness(200)}
-              key={option.value}
-            >
-              <TouchableOpacity
-                key={option.value}
-                style={[
-                  styles.optionItem,
-                  index !== options.length - 1 && styles.optionItemSeparator,
-                ]}
-                onPress={() => handleOptionSelect(option)}
-              >
-                <Text style={styles.optionText}>{option.label}</Text>
-              </TouchableOpacity>
-            </Animated.View>
-          ))}
-        </Animated.View>
-      )}
+      {renderDropdownModal()}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+  },
   selectBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -115,15 +156,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+  },
   dropdownContainer: {
     position: 'absolute',
-    top: '100%',
     backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#eee',
     borderRadius: 8,
     overflow: 'hidden',
-    marginTop: 4,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: {
