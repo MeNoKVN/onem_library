@@ -11,7 +11,7 @@ npm install react-native-onem_library
 ## Usage
 
 ```js
-import { multiply } from 'react-native-onem_library';
+import { AnimatedDropdown } from 'react-native-onem_library';
 
 // ...
 
