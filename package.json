@@ -1,6 +1,6 @@
 {
   "name": "react-native-onem_library",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Useful components",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
