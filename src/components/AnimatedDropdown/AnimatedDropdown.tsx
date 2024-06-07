@@ -12,7 +12,6 @@ interface DropdownOption {
   label: string;
   value: string;
 }
-
 interface AnimatedDropdownProps {
   options: DropdownOption[];
   onSelect: (selectedValue: string) => void;
@@ -49,8 +48,9 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
   };
 
   const calculateDropdownPosition = () => {
-    selectBoxRef.current?.measureInWindow((x, y, height) => {
-      setDropdownPosition({ top: y + height + 2, left: x });
+    selectBoxRef.current?.measure((x, y, width, height, pageX, pageY) => {
+      // Adjusted to measure based on the screen
+      setDropdownPosition({ top: pageY + height + 2, left: pageX });
     });
   };
 
@@ -97,10 +97,11 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
   const renderDropdownModal = () => {
     return (
       <Modal visible={isOpen} transparent animationType="none">
-        <TouchableOpacity
-          style={styles.modalBackground}
-          onPress={handleBackdropPress}
-        >
+        <View style={StyleSheet.absoluteFill}>
+          <TouchableOpacity
+            style={styles.modalBackground}
+            onPress={handleBackdropPress}
+          />
           <View
             style={[
               styles.dropdownContainer,
@@ -113,7 +114,7 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
           >
             {renderOptions()}
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     );
   };
