@@ -1,30 +1,24 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { AnimatedDropdown } from 'react-native-onem_library';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import AnimatedDropdownExample from './screens/AnimatedDropdownExample';
+import SwipeCardsExample from './screens/SwipeCardsExample';
+import HomeScreen from './screens/HomeScreen';
 
-const options = [
-  { label: 'Option 1', value: 'option1' },
-  { label: 'Option 2', value: 'option2' },
-  { label: 'Option 3', value: 'option3' },
-];
-
-const handleSelect = (selectedValue: string) => {
-  console.log('Selected value:', selectedValue);
-};
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <AnimatedDropdown options={options} onSelect={handleSelect} />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen
+          name="AnimatedDropdown"
+          component={AnimatedDropdownExample}
+        />
+        <Stack.Screen name="SwipeCards" component={SwipeCardsExample} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

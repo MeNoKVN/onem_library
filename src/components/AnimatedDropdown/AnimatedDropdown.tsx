@@ -71,7 +71,6 @@ const AnimatedDropdown: React.FC<AnimatedDropdownProps> = ({
           (Platform.OS === 'android' ? Number(boxHeight) / 2 : 0),
         left: pageX,
       });
-      console.log();
     });
   };
 
